@@ -66,5 +66,5 @@
     "@types/react-query": "^1.2.9",
     "@types/react-router-dom": "^5.3.3"
   },
-  "homepage": "http://RoadMG.github.io/ToDo_List"
+  "homepage": "http://roadmg.github.io/ToDo_List"
 }
