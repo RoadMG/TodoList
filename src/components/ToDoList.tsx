@@ -30,10 +30,6 @@ export const ToDoList = () => {
           </li>
         ))}
       </ul>
-      {/* <CreateToDo />
-      {toDos?.map((toDo) => (
-        <ToDo key={toDo.id} {...toDo} />
-      ))} */}
     </>
   );
 };
