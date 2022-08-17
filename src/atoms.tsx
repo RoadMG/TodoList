@@ -1,46 +1,23 @@
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
+import { recoilPersist } from "recoil-persist";
 
-export enum Categories {
-  "TO_DO" = "TO_DO",
-  "DOING" = "DOING",
-  "DONE" = "DONE",
-}
+const { persistAtom } = recoilPersist();
 
-export interface IToDo {
-  text: string;
+export interface ITodo {
   id: number;
-  category: Categories;
+  text: string;
 }
 
-export const categoryState = atom<Categories>({
-  key: "category",
-  default: Categories.TO_DO,
-});
+export interface IToDoState {
+  [key: string]: ITodo[];
+}
 
-export const toDoState = atom<IToDo[]>({
+export const toDoState = atom<IToDoState>({
   key: "toDo",
-  default: [],
-  effects: [
-    ({ setSelf, onSet }) => {
-      const toDoStoreKey = "ToDo";
-      const savedValue = localStorage.getItem(toDoStoreKey);
-      if (savedValue != null) {
-        setSelf(JSON.parse(savedValue));
-      }
-      onSet((newValue, _, isReset) => {
-        isReset
-          ? localStorage.removeItem(toDoStoreKey)
-          : localStorage.setItem(toDoStoreKey, JSON.stringify(newValue));
-      });
-    },
-  ],
-});
-
-export const toDoSelector = selector({
-  key: "toDoSelector",
-  get: ({ get }) => {
-    const toDos = get(toDoState);
-    const category = get(categoryState);
-    return toDos.filter((toDo) => toDo.category === category);
+  default: {
+    "To Do": [],
+    Doing: [],
+    Done: [],
   },
+  effects_UNSTABLE: [persistAtom],
 });

@@ -1,52 +1,68 @@
-import { Categories, IToDo, toDoState } from "../atoms";
-import { useSetRecoilState } from "recoil";
+import React from "react";
 
-const ToDo = ({ text, category, id }: IToDo) => {
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { toDoState } from "../atoms";
+
+interface IToDo {
+  boardId: string;
+  toDoText: string;
+  toDoId: number;
+}
+const ToDo = ({ boardId, toDoText, toDoId }: IToDo) => {
   const setToDos = useSetRecoilState(toDoState);
+  const toDos = useRecoilValue(toDoState);
 
-  const deleteToDo = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setToDos((oldToDos) => {
-      const newToDos = oldToDos.filter((toDos) => toDos.id !== id);
-      return newToDos;
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { name },
+    } = e;
+    const source = boardId;
+    const destination = e.currentTarget.textContent;
+
+    setToDos((allThings) => {
+      const targetIndex = allThings[boardId].findIndex(
+        (toDo) => toDo.id === toDoId
+      );
+      const sourceCategory = [...allThings[source]];
+      const taskObj = sourceCategory[targetIndex];
+      const destinationCategory = [...allThings[destination as any]];
+      sourceCategory.splice(targetIndex, 1);
+      destinationCategory.splice(1, 0, taskObj);
+
+      return {
+        ...allThings,
+        [source]: sourceCategory,
+        [destination as any]: destinationCategory,
+      };
     });
   };
 
-  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const {
-      currentTarget: { name },
-    } = event;
-    setToDos((oldToDos) => {
-      const targetIndex = oldToDos.findIndex((toDo) => toDo.id === id);
-      const oldToDo = oldToDos[targetIndex];
-      const newToDo = { text, id, category: name as any };
-      return [
-        ...oldToDos.slice(0, targetIndex),
-        newToDo,
-        ...oldToDos.slice(targetIndex + 1),
-      ];
+  const deleteToDo = () => {
+    setToDos((allThings) => {
+      const targetIndex = allThings[boardId].findIndex(
+        (toDo) => toDo.id === toDoId
+      );
+      const oldToDos = [...allThings[boardId]];
+      oldToDos.splice(targetIndex, 1);
+
+      return { ...allThings, [boardId]: oldToDos };
     });
   };
 
   return (
-    <li>
-      <span>{text}</span>
-      {category !== Categories.DOING && (
-        <button name={Categories.DOING} onClick={onClick}>
-          Doing
-        </button>
-      )}
-      {category !== Categories.TO_DO && (
-        <button name={Categories.TO_DO} onClick={onClick}>
-          To Do
-        </button>
-      )}
-      {category !== Categories.DONE && (
-        <button name={Categories.DONE} onClick={onClick}>
-          Done
-        </button>
-      )}
-      <button onClick={deleteToDo}>DEL</button>
-    </li>
+    <>
+      <p>
+        {toDoText}
+        {Object.keys(toDos)
+          .filter((prop) => prop !== boardId)
+          .map((name) => (
+            <button name={boardId} key={name} onClick={onClick}>
+              {name}
+            </button>
+          ))}
+        <button onClick={deleteToDo}>Delete</button>
+      </p>
+    </>
   );
 };
 

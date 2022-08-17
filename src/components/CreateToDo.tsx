@@ -1,32 +1,42 @@
+import React from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { toDoState } from "../atoms";
 import { useForm } from "react-hook-form";
-import { useSetRecoilState, useRecoilValue } from "recoil";
-import { categoryState, toDoState } from "../atoms";
+
+interface IToDoProps {
+  boardId: string;
+}
 
 interface IForm {
   toDo: string;
 }
 
-const CreateToDo = () => {
+const CreateToDo = ({ boardId }: IToDoProps) => {
   const setToDos = useSetRecoilState(toDoState);
-  const category = useRecoilValue(categoryState);
-  const { register, handleSubmit, setValue } = useForm<IForm>();
-  const handleValid = ({ toDo }: IForm) => {
-    setToDos((oldToDos) => [
-      { text: toDo, id: Date.now(), category },
-      ...oldToDos,
-    ]);
+  const toDos = useRecoilValue(toDoState);
+  const { register, setValue, handleSubmit } = useForm<IForm>();
+  const onValid = ({ toDo }: IForm) => {
+    const newToDo = {
+      id: Date.now(),
+      text: toDo,
+    };
+
+    setToDos((allBoards) => {
+      return { ...allBoards, [boardId]: [newToDo, ...allBoards[boardId]] };
+    });
     setValue("toDo", "");
   };
   return (
-    <form onSubmit={handleSubmit(handleValid)}>
-      <input
-        {...register("toDo", {
-          required: "Please write a To Do",
-        })}
-        placeholder="Write a to do"
-      />
-      <button>Add</button>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(onValid)}>
+        <input
+          {...register("toDo", { required: true })}
+          type="text"
+          placeholder="add task"
+        />
+        <button>Add</button>
+      </form>
+    </>
   );
 };
 
