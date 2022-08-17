@@ -13,9 +13,6 @@ const ToDo = ({ boardId, toDoText, toDoId }: IToDo) => {
   const toDos = useRecoilValue(toDoState);
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const {
-      currentTarget: { name },
-    } = e;
     const source = boardId;
     const destination = e.currentTarget.textContent;
 

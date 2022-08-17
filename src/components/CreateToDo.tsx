@@ -1,5 +1,4 @@
-import React from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { toDoState } from "../atoms";
 import { useForm } from "react-hook-form";
 
@@ -13,7 +12,7 @@ interface IForm {
 
 const CreateToDo = ({ boardId }: IToDoProps) => {
   const setToDos = useSetRecoilState(toDoState);
-  const toDos = useRecoilValue(toDoState);
+
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onValid = ({ toDo }: IForm) => {
     const newToDo = {

@@ -1,5 +1,4 @@
-import React from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { toDoState } from "../atoms";
 import CreateToDo from "./CreateToDo";
 import { Creator } from "./Creator";
@@ -7,11 +6,6 @@ import ToDo from "./ToDo";
 
 export const ToDoList = () => {
   const toDos = useRecoilValue(toDoState);
-  const setToDos = useSetRecoilState(toDoState);
-
-  const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
-    setToDos(event.currentTarget.value as any);
-  };
 
   return (
     <>
